@@ -37,20 +37,31 @@ const Login = (props) => {
   const [emailState, dispatchEmail] = useReducer(emailReducer, { value: '', isValid: null });
   const [passwordState, dispatchPassword] = useReducer(passwordReducer, { value: '', isValid: null });
 
+  // This is object destructuring
+  // We could use 'const { isValid } = emailState;' to assign the 'emailState.isValid' value to the variable 'isValid'
+  // However, when doing it as below, we assign the 'emailState.isValid;' value to the variable 'emailIsValid'
+  const { isValid: emailIsValid } = emailState;
+  const { isValid: passwordIsValid } = passwordState;
+
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      setFormIsValid(
+        // It is ok to refer to these states here (while setting another state), because using them within useEffect, they will always have the latest state values
+        emailIsValid && passwordIsValid
+      );
+    }, 500);
+
+    return () => {
+      clearTimeout(identifier);
+    };
+  }, [emailIsValid, passwordIsValid]);
+
   const emailChangeHandler = (event) => {
     dispatchEmail({ type: 'USER_INPUT', val: event.target.value });
-
-    setFormIsValid(
-      event.target.value.includes('@') && passwordState.isValid
-    );
   };
 
   const passwordChangeHandler = (event) => {
     dispatchPassword({ type: 'USER_INPUT', val: event.target.value });
-
-    setFormIsValid(
-      emailState.isValid && event.target.value.trim().length > 6
-    );
   };
 
   const validateEmailHandler = () => {
