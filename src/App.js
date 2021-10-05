@@ -3,6 +3,7 @@ import React, { useState, useEffect  } from 'react';
 import Login from './components/Login/Login';
 import Home from './components/Home/Home';
 import MainHeader from './components/MainHeader/MainHeader';
+import AuthContext from './store/auth-context';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -32,14 +33,18 @@ function App() {
     setIsLoggedIn(false);
   };
 
+  // You must wrap all components that need to access the AuthContext with the <AuthContext.Provider> tag
+  // In this example, you'r e wrapping every component, so it'll be available everywhere, but you could also, for example, just wrap the <MainHeader> component, if that's the only place it's needed
+  // All descendents (children, grand-children etc) of wrapped components will have access to AuthContext as a result
+  // We use <AuthContext.Provider> because AuthContext is not a component. Adding the '.Provider' makes it a component
   return (
-    <React.Fragment>
-      <MainHeader isAuthenticated={isLoggedIn} onLogout={logoutHandler} />
+    <AuthContext.Provider value={{isLoggedIn: isLoggedIn}}>
+      <MainHeader onLogout={logoutHandler} />
       <main>
         {!isLoggedIn && <Login onLogin={loginHandler} />}
         {isLoggedIn && <Home onLogout={logoutHandler} />}
       </main>
-    </React.Fragment>
+    </AuthContext.Provider>
   );
 }
 
