@@ -1,16 +1,30 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useImperativeHandle } from 'react';
 
 import classes from './Input.module.css';
 
-const Input = (props) => {
+// In 99.9% of cases you will only ever need the props argument
+// However, you can accept a second 'ref' argument, which is a ref if a ref is set
+// (which is happening when Input is called in the Login.js component)
+// To accept this second 'ref' argument, you also need to use 'React.forwardRef'
+// This then binds the 'Input' component to a ref
+// The only thing that you will be able to use with this ref is what you expose through 'useImperativeHandle()' - in this case just 'focus'
+// This is what allows us to use 'emailInputRef.current.focus();' and 'passwordInputRef.current.focus();' in the 'Login.js' component
+const Input = React.forwardRef((props, ref) => {
   const inputRef = useRef();
 
-  useEffect(() => {
-    // As useEffect is only called after everything else loads, the 'inputRef' will be the last input to load, which is the password
-    // This function will then 'focus' on the password input (make it the focus of the page, where the cursor is)
-    // (as we don't include any dependencies, this will only happen on page load)
+  const activate = () => {
     inputRef.current.focus();
-  }, []);
+  };
+
+  // This is a hook that you will (and should) use very rarely
+  // The second parameter is a function that should return an object
+  // That object should contain all the data that you'll be able to use outside
+  // (it exposes a function here, but can also expose values)
+  useImperativeHandle(ref, () => {
+    return {
+      focus: activate, // This points at the 'activate' function above, called with the alias 'focus'
+    }
+  });
 
   return (
     <div
@@ -29,6 +43,6 @@ const Input = (props) => {
       />
     </div>
   );
-};
+});
 
 export default Input;
