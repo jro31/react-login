@@ -37,9 +37,10 @@ function App() {
   // In this example, you'r e wrapping every component, so it'll be available everywhere, but you could also, for example, just wrap the <MainHeader> component, if that's the only place it's needed
   // All descendents (children, grand-children etc) of wrapped components will have access to AuthContext as a result
   // We use <AuthContext.Provider> because AuthContext is not a component. Adding the '.Provider' makes it a component
+  // We shouldn't use context to pass props that are used only by direct children (hence still passing the 'loginHandler' and 'logoutHander' in props)
   return (
-    <AuthContext.Provider value={{isLoggedIn: isLoggedIn}}>
-      <MainHeader onLogout={logoutHandler} />
+    <AuthContext.Provider value={{isLoggedIn: isLoggedIn, onLogout: logoutHandler}}>
+      <MainHeader />
       <main>
         {!isLoggedIn && <Login onLogin={loginHandler} />}
         {isLoggedIn && <Home onLogout={logoutHandler} />}
